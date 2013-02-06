@@ -99,16 +99,26 @@
 					*transport：传输层模块。<br>
 				
 			<h2>mars通讯层实现</h2>
-				<strong><li>设计</li></strong>
 				mars的通讯层主要是参考ActiveMQ的通讯层实现的。
 				<img src="images/communication.png">
-					<h4>client设计</h4>
+					<h3>client设计</h3>
 					client的设计采用职责链的方式，通过定义接口类Transport、TransportListener、TransportFilter，把socket通讯相关的失败重连、心跳处理、请求响应匹配等基本功能“串”起来，以完成client端需要完成的功能。
-					<h4>Server设计</h4>
+					<h3>Server设计</h3>
 					Server端处理相对简单，它解析发过来的请求，并通过线程池来执行具体业务处理，超过线程池无法处理的请求将直接丢弃。
-					<h4>Message格式(报文头(12 bytes) + 报文体)</h4>
-					<h5>mars通讯层实现</h5>
-					
+					<h3>Message格式(报文头(12 bytes) + 报文体)</h3>
+						<h4>报文头格式</h4>
+						<table>
+							<tr>
+								<th>类型</th>
+								<th>长度(byte)</th>
+								<th>位置</th>
+								<th>描述</th>
+							</tr>
+						<tr><td>int</td><td>4</td><td>0-3</td><td>报文长度</td></tr>
+						<tr><td>byte</td><td>2</td><td>4-5</td><td>magic验证功能</td></tr>
+						<tr><td>byte</td><td>1</td><td>6</td><td>压缩标识，0=未压缩，1=压缩</td></tr>
+						</table>
+
 				
     <!-- FOOTER  -->
     <div id="footer_wrap" class="outer">
