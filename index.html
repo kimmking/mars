@@ -138,10 +138,11 @@
 		<h2>mars的序列化</h2>
 				在阿里的fastJSON和google的protocol Buffer的集成上研发的一套序列化工具，目前已经开源在github上：glowworm(萤火虫):https://github.com/netcomm/glowWorm
 		
-		<h2>Mars使用示例</h2>
-		<h3>服务提供方_接口实现类<h3>
+		<h2>mars使用示例</h2>
+		<h3>服务提供方<h3>
 		<pre><code>
-				$ package demo;
+			  // 接口实现类
+				package demo;
 				import java.util.ArrayList;
 				import com.cn.jd.mars.service.MarsServiceExportService;
 
@@ -154,6 +155,96 @@
 				}
 		</code></pre>
 		
+		<pre><code>
+			  // spring配置文件
+			  <?xml version="1.0" encoding="UTF-8"?>
+					<beans xmlns="http://www.springframework.org/schema/beans"
+							xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+							xmlns:mars="http://com.cn.360buy/schema/mars"
+							xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+							http://com.cn.360buy/schema/mars http://com.cn.360buy/schema/mars/mars.xsd">
+						<!-- 本地业务bean,作为服务暴露给外部 -->
+						<bean id="testProducer" class="demo.TestProducer">
+		    		</bean>
+						<!-- 使用zookeeper作为服务注册中心 -->
+						<mars:registry protocol="zookeeper" address="127.0.0.1:2181" />
+						<!-- 用mars协议在10000端口暴露服务 -->
+						<mars:transporServer id="mar1" type="mars" ip="127.0.0.1" port="10000" />
+						<!-- 需要暴露的服务接口 -->
+						<mars:service interface="demo.TestService" ref="testProducer" transporServer="mar1" />
+				</beans>
+		</code></pre>
+		
+		<h3>服务消费方<h3>
+		<pre><code>
+			  // 消费者例子
+				package demo;
+
+				import java.math.BigDecimal;
+				import java.util.ArrayList;
+				import java.util.HashMap;
+				
+				public class TestConsumer extends Thread
+				{
+					private TestService theTestService = null;
+					public TestConsumer()
+					{		
+					}
+					
+					public void requestService()
+					{
+							ArrayList tmpList = new ArrayList();
+							tmpList.add("123");
+							tmpList.add(new BigDecimal("100.00"));
+							HashMap tmpHMap = new HashMap();
+							tmpHMap.put("1", "ok le man1");
+							tmpList.add(tmpHMap);
+							
+							try
+							{
+								theTestService.sayHello("new world", tmpList);
+							}
+							catch(Exception ex)
+							{
+								ex.printStackTrace();
+							}
+					}
+				
+					public TestService getTheTestService() {
+						return theTestService;
+					}
+				
+					public void setTheTestService(TestService theTestService) {
+						this.theTestService = theTestService;
+					}
+				}
+
+		</code></pre>
+		
+		<pre><code>
+			  // spring配置文件
+			  <?xml version="1.0" encoding="UTF-8"?>
+
+				<beans xmlns="http://www.springframework.org/schema/beans"
+					xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					xmlns:mars="http://com.cn.360buy/schema/mars"
+					xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+					http://com.cn.360buy/schema/mars http://com.cn.360buy/schema/mars/mars.xsd">
+					
+					<!-- 使用zookeeper作为服务注册中心 -->
+					<mars:registry protocol="zookeeper" address="127.0.0.1:2181" />
+					
+					<!-- 远程服务引用，可以像本地bean一样使用 -->
+					<mars:serviceReference id="testService" interface="demo.TestService"
+						clustertype="failover" loadbalance="roundrobin" clusterItems="" />
+					
+					<!-- 本地业务bean,远程服务作为属性注入 -->
+					<bean id="testds" class="demo.TestConsumer">
+				    	<property name="theTestService" ref="testService"/>
+				  </bean>
+				</beans>
+
+		</code></pre>
 		
     <!-- FOOTER  -->
     <div id="footer_wrap" class="outer">
@@ -162,8 +253,8 @@
         <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
-
     
+    <h2>mars详细参数使用说明</h2>
 
   </body>
 </html>
