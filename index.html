@@ -62,7 +62,7 @@
 					
 			<h2>mars设计</h2>
 					<strong><li>软件架构</li></strong>
-						<img src="imgs/struct.png">
+						<img src="images/struct.png">
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;服务请求Client和服务提供Server端它们之间采用TCP通讯。Mars的架构设计分成以下几层，我们按图从下往上依次介绍：
 						<li>Transport：传输层。它定义数据的传输方式，目前采用Mars自己的传输格式，这一层的主要功能包括：心跳、重连、报文的拆/组包等。</li>
 						<li>Protocol：协议层，定义数据的传输格式，这一层的主要功能包括提供Json、Xml、Protobuf、java序列化bytes流等协议的编、解码。
@@ -81,7 +81,7 @@
 					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mars的领域模型非常直白：应用代码发起的任何远程调用都会被mars客户端封装成一个Request实例，序列化传给服务器端。mars服务器端收到客户端请求处理完后，
 					把处理结果序列化之后返回给调用方。mars的所有设计都是为了完成这一转化。
 					<strong><li>物理部署架构设计</li></strong>
-					<img src="imgs/deploy.png">
+					<img src="images/deploy.png">
 					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;上面是一个生产环境的部署示意图，某一个服务有多个提供者部署在不同的机器上，这样服务消费方可以通过注册中心，
 					自动的新增、删除服务提供者，当服务能力不够的时候，可以方便的新增服务提供方的数量。
     <!-- FOOTER  -->
