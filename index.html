@@ -154,24 +154,6 @@
 					}
 				}
 		</code></pre>
-		<p>
-			  // spring配置文件
-				<beans xmlns="http://www.springframework.org/schema/beans"
-							xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-							xmlns:mars="http://com.cn.360buy/schema/mars"
-							xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-							http://com.cn.360buy/schema/mars http://com.cn.360buy/schema/mars/mars.xsd">
-						<!-- 本地业务bean,作为服务暴露给外部 -->
-						<bean id="testProducer" class="demo.TestProducer">
-		    		</bean>
-						<!-- 使用zookeeper作为服务注册中心 -->
-						<mars:registry protocol="zookeeper" address="127.0.0.1:2181" />
-						<!-- 用mars协议在10000端口暴露服务 -->
-						<mars:transporServer id="mar1" type="mars" ip="127.0.0.1" port="10000" />
-						<!-- 需要暴露的服务接口 -->
-						<mars:service interface="demo.TestService" ref="testProducer" transporServer="mar1" />
-				</beans>
-		</p>
 		
 		<h3>服务消费方<h3>
 		<pre><code>
@@ -218,29 +200,7 @@
 				}
 
 		</code></pre>
-		
-		<pre><code>
-			  // spring配置文件
-				<beans xmlns="http://www.springframework.org/schema/beans"
-					xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-					xmlns:mars="http://com.cn.360buy/schema/mars"
-					xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-					http://com.cn.360buy/schema/mars http://com.cn.360buy/schema/mars/mars.xsd">
-					
-					<!-- 使用zookeeper作为服务注册中心 -->
-					<mars:registry protocol="zookeeper" address="127.0.0.1:2181" />
-					
-					<!-- 远程服务引用，可以像本地bean一样使用 -->
-					<mars:serviceReference id="testService" interface="demo.TestService"
-						clustertype="failover" loadbalance="roundrobin" clusterItems="" />
-					
-					<!-- 本地业务bean,远程服务作为属性注入 -->
-					<bean id="testds" class="demo.TestConsumer">
-				    	<property name="theTestService" ref="testService"/>
-				  </bean>
-				</beans>
-
-		</code></pre>
+				
 		
     <!-- FOOTER  -->
     <div id="footer_wrap" class="outer">
@@ -250,7 +210,14 @@
       </footer>
     </div>
     
-    <h2>mars详细参数使用说明</h2>
+    <h2>spring配置使用说明</h2>
+    <h3>服务提供方spring配置</h3>
+    	<li>服务注册中心的配置</li>
+    	示例：<mars:registry protocol="zookeeper" address="10.12.162.87:2181" />
+			参数说明：
+				protocol:注册中心的协议类型，目前支持zookeeper。
+				address:zk的地址。
+			
 
   </body>
 </html>
