@@ -84,6 +84,20 @@
 					<img src="images/deploy.png">
 					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;上面是一个生产环境的部署示意图，某一个服务有多个提供者部署在不同的机器上，这样服务消费方可以通过注册中心，
 					自动的新增、删除服务提供者，当服务能力不够的时候，可以方便的新增服务提供方的数量。
+			
+			<h2>mars实现</h2>
+				<strong><li>服务暴露过程</li></strong>
+					<img src="images/serviceexport.png">
+				<strong><li>服务消费过程</li></strong>
+					<img src="images/serviceref.png">
+				<strong><li>模块包结构</li></strong>
+					#registry：服务注册模块。<br>
+					#request：服务请求模块，包括集群、负载均衡等。<br>
+					#proxy：创建代理模块。<br>
+					#serviceexporter：服务暴露模块。<br>
+					#spring：spring自定义标签模块。<br>
+					#transport：传输层模块。<br>
+
     <!-- FOOTER  -->
     <div id="footer_wrap" class="outer">
       <footer class="inner">
