@@ -201,14 +201,50 @@
 
 		</code></pre>
 		<h2>spring配置使用说明</h2>
-    <h3>服务提供方spring配置</h3>
-    	<li>服务注册中心的配置</li>
-    	示例：
-    	<pre><code>mars:registry protocol="zookeeper" address="10.12.162.87:2181" /</code></pre>
-			参数说明：
-				protocol:注册中心的协议类型，目前支持zookeeper。
-				address:zk的地址。
-		
+	    <h3>服务提供方spring配置</h3>
+	    	<li>服务注册中心的配置</li>
+	    	示例：
+	    	<pre><code>mars:registry protocol="zookeeper" address="10.12.162.87:2181"</code></pre>
+				参数说明：
+					<b>protocol</b>:注册中心的协议类型，目前支持zookeeper。<br>
+					<b>address</b>:zk的地址。
+			<li>通讯方式的配置</li>
+				示例：
+	    	<pre><code>mars:transporServer id="axx" type="mars" ip="127.0.0.1" port="10000"</code></pre>
+				参数说明：
+						<b>type</b>:通讯类型，目前支持mars协议。<br>
+						<b>ip</b>:服务ip地址。<br>
+	     			<b>port</b>:服务端口。
+			<li>服务的配置</li>
+				示例：
+	    	<pre><code>mars:service interface="demo.TestService" ref="testProducer" transporServer="mar1"</code></pre>
+				参数说明：
+						<b>interface</b>：对外暴露的服务接口名。<br>
+						<b>ref</b>：实现服务接口的实例类。<br>
+						<b>transporServer</b>：暴露服务的通讯方式。<br>
+
+			<h3>服务消费方spring配置</h3>
+				<li>服务注册中心的配置</li>
+	    	示例：
+	    	<pre><code>mars:registry protocol="zookeeper" address="10.12.162.87:2181"</code></pre>
+				参数说明：
+					<b>protocol</b>:注册中心的协议类型，目前支持zookeeper。<br>
+					<b>address</b>:zk的地址。
+				<li>服务引用的配置</li>
+				示例：
+	    	<pre><code>mars:serviceReference id="testService" interface="demo.TestService"
+		clustertype="failover" loadbalance="roundrobin" clusterItems=""
+		connections="5" timeout="1000" retries="2"</code></pre>
+				参数说明：
+					<b>interface</b>:需要调用的服务接口名。<br>
+					<b>clustertype</b>:集群类型，目前支持failover(默认)。<br>
+					<b>loadbalance</b>:负载均衡策略，目前支持roundrobin(轮循)(默认)。<br>
+					<b>clusterItems</b>:静态集群配置。<br>
+					<b>connections</b>:建立连接时的长连接个数(默认1个)。<br>
+					<b>timeout</b>:远程服务调用超时时间(毫秒)(默认3000)。<br>
+					<b>retries</b>:远程服务调用重试次数，不包括第一次调用，不需要重试请设为0(默认0)。<br>
+
+			
     <!-- FOOTER  -->
     <div id="footer_wrap" class="outer">
       <footer class="inner">
