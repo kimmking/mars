@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mars="http://com.cn.360buy/schema/mars"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://com.cn.360buy/schema/mars http://com.cn.360buy/schema/mars/mars.xsd">
+	
+	<!-- 本地业务bean,作为服务暴露给外部 -->
+	<bean id="testProducer" class="demo.intf.TestProducer">
+  	</bean>
+	
+	<!-- 使用zookeeper作为服务注册中心 -->
+	<mars:registry protocol="zookeeper" address="127.0.0.1:2181" />
+	
+	<!-- 用mars协议在10000端口暴露服务 -->
+	<mars:transporServer id="mar1" type="mars" ip="127.0.0.1" port="10000" />
+	
+	<!-- 需要暴露的服务接口 -->
+	<mars:service interface="demo.intf.TestService" ref="testProducer" transporServer="mar1" />
+</beans>

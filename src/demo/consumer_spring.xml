@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mars="http://com.cn.360buy/schema/mars"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://com.cn.360buy/schema/mars http://com.cn.360buy/schema/mars/mars.xsd">
+	
+	<!-- 使用zookeeper作为服务注册中心 -->
+	<mars:registry protocol="zookeeper" address="127.0.0.1:2181" />
+	
+	<!-- 远程服务引用，可以像本地bean一样使用 -->
+	<mars:serviceReference id="testService" interface="demo.intf.TestService"
+		clustertype="failover" loadbalance="roundrobin" clusterItems=""
+		connections="1" timeout="1000" retries="2"/>
+	
+	<!-- 本地业务bean,远程服务作为属性注入 -->
+	<bean id="testds" class="demo.intf.TestConsumer">
+    	<property name="theTestService" ref="testService"/>
+  	</bean>
+</beans>
