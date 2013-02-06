@@ -1,85 +1,74 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Mars by netcomm</title>
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Mars : 简洁实用的服务调用框架" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Mars</title>
   </head>
+
   <body>
-    <div class="wrapper">
-      <header>
-        <h1>Mars</h1>
-        <p>简洁实用的服务调用框架</p>
-        <p class="view"><a href="https://github.com/netcomm/mars">GitHub On mars<small>netcomm/mars</small></a></p>
-      </header>
-      <section>
-        <h2>mars概述</h2>
-        	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Mars：火星)Mars定位在实用、透明化的轻量级远过程调用(RPC)。设计功能包括：</p>
-					<ul>
-						<li>像调用本地方法一样透明的调用远程方法，只需通过Spring简单配置就可完成，对应用或业务代码是完全透明的。</li>
-						<li>服务提供者的自动注册与发现，服务调用方不必事先配置服务提供方地址，注册中心能自动分发新增或删除的服务提供者信息。</li>
-						<li>提供服务的负载均衡、容错、HA等机制。</li>
-						<li>能对每笔服务调用的执行时间、成功与否等关键指标进行监控，以达到可运维。</li>
-						<li>提供高性能的服务调用。</li>
-						<li>服务提供者、消费者只支持java语言。</li>
-					</ul>
-				
-				<h2>mars功能</h2>
-        	<h3><li>应用或业务代码可以透明的调用远端服务</li></h3>
-        	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;通过java的动态代理等机制，就可以让一个远端服务提供者‘隐藏’在一个接口类后面。同时，使用spring2以上版本提供的自定义标签功能，
-        	用户就可以在现有spring配置文件中方便的使用Mars。通过这些方法，就可以让用户的代码没有任何改动，就能调用到远程的服务了。
-        	<h3><li>提供服务的注册中心</li></h3>
-        	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;采用zookeeper作为注册中心，服务提供者可以把服务发布到zookeeper上，同时zookeeper会把最新的服务提供者推给相关的消费者。
-					消费者通过这种机制可以自动的新增、删除服务提供者。
-					<h3><li>提供服务的负载均衡、容错、HA</li></h3>
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;服务消费者可以把同一个服务接口的多个提供者做一个集群，并提供灵活的负载均衡策略，如RoundRobin(轮循每个服务提供者)。
-					同时提供集群的容错策略，如提供Failover Cluster(失败自动切换，当出现失败，重试其它服务器)。同时也可以提供HA机制，
-					如Master-Slave方式，只有当Master失效后才向Slave发送服务请求。
-					<h3><li>监控服务的调用情况</li></h3>
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;系统是否可运维对生产系统来说是非常重要的一个方面，Mars可以记录每次服务调用的时间、次数，这样就可以捕获调用异常，
-					如服务调用在某个时间段比较慢。
-					<h3><li>提供高效、稳定的通讯功能</li></h3>
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;服务消费者和提供者之间采用Mars内部实现的一套自定义通讯框架，在保证性能的前提下提供心跳、失败重连等机制，
-					以应对各种复杂的网络环境。
-				
-				<h2>mars设计</h2>
-					<h3><li>软件架构</li></h3>
-						<img src="imgs/struct.png">
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;服务请求Client和服务提供Server端它们之间采用TCP通讯。Mars的架构设计分成以下几层，我们按图从下往上依次介绍：
-						<li>Transport：传输层。它定义数据的传输方式，目前采用Mars自己的传输格式，这一层的主要功能包括：心跳、重连、报文的拆/组包等。</li>
-						<li>Protocol：协议层，定义数据的传输格式，这一层的主要功能包括提供Json、Xml、Protobuf、java序列化bytes流等协议的编、解码。
-						(目前采用编写glowworm这个开源序列化包)</li>
-						<li>Filter：过滤层，它在服务消费方或提供方的职能是不一样的。</li>
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1、	服务消费方：主要提供监控的Filter。<br>
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、	服务提供方：主要提供服务调用权限控制等Filter。
-						<li>Cluster/ LoadBalance：集群层，这一层主要功能是为服务消费方提供集群等功能。</li>
-						<li>服务接口的Proxy和服务的Wrapper：</li>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1、服务接口的Proxy：它作用在服务调用Client端，它采用动态代理机制并通过Spring注入到服务请求方的业务代码中，充当一个接口的现实。
-						这样业务代码在使用的时候根本不用知道它调用的是本地接口实现还是远程服务。
-						<br>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、服务接口的Wrapper：它作用在服务提供者Server端，它的作用是把从协议层来的服务请求，转换成对具体服务实现类的调用。
-						<li>用户的业务代码和服务具体实现类</li>
-					<h3><li>软件架构</li></h3>
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mars的领域模型非常直白：应用代码发起的任何远程调用都会被mars客户端封装成一个Request实例，序列化传给服务器端。mars服务器端收到客户端请求处理完后，
-					把处理结果序列化之后返回给调用方。mars的所有设计都是为了完成这一转化。
-					<h3><li>物理部署架构设计</li></h3>
-					<img src="imgs/deploy.png">
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;上面是一个生产环境的部署示意图，某一个服务有多个提供者部署在不同的机器上，这样服务消费方可以通过注册中心，
-					自动的新增、删除服务提供者，当服务能力不够的时候，可以方便的新增服务提供方的数量。
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/netcomm/mars">View on GitHub</a>
+
+          <h1 id="project_title">Mars</h1>
+          <h2 id="project_tagline">简洁实用的服务调用框架</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/netcomm/mars/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/netcomm/mars/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h3>Welcome to GitHub Pages.</h3>
+
+<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+
+<pre><code>$ cd your_repo_root/repo_name
+$ git fetch origin
+$ git checkout gh-pages
+</code></pre>
+
+<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+
+<h3>Designer Templates</h3>
+
+<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+
+<h3>Rather Drive Stick?</h3>
+
+<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+
+<h3>Authors and Contributors</h3>
+
+<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+
+<h3>Support or Contact</h3>
+
+<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
       </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/netcomm">netcomm</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Mars maintained by <a href="https://github.com/netcomm">netcomm</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
-    <script src="javascripts/scale.fix.js"></script>
+
     
+
   </body>
 </html>
