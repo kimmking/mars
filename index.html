@@ -4,7 +4,7 @@
   <head>
     <meta charset='utf-8' />
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Mars : 简洁实用的服务调用框架" />
+    <meta name="description" content="Mars : 简洁、实用的服务调用框架" />
 
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
@@ -19,7 +19,7 @@
           <a id="forkme_banner" href="https://github.com/netcomm/mars">View on GitHub</a>
 
           <h1 id="project_title">Mars</h1>
-          <h2 id="project_tagline">简洁实用的服务调用框架</h2>
+          <h2 id="project_tagline">简洁、实用的服务调用框架</h2>
 
             <section id="downloads">
               <a class="zip_download_link" href="https://github.com/netcomm/mars/zipball/master">Download this project as a .zip file</a>
@@ -64,9 +64,9 @@
 					<strong><li>软件架构</li></strong>
 						<img src="images/struct.png">
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;服务请求Client和服务提供Server端它们之间采用TCP通讯。Mars的架构设计分成以下几层，我们按图从下往上依次介绍：
-						<li>Transport：传输层。它定义数据的传输方式，目前采用Mars自己的传输格式，这一层的主要功能包括：心跳、重连、报文的拆/组包等。</li>
-						<li>Protocol：协议层，定义数据的传输格式，这一层的主要功能包括提供Json、Xml、Protobuf、java序列化bytes流等协议的编、解码。
-						(目前采用编写glowworm这个开源序列化包)</li>
+						<strong><li>Transport：传输层。它定义数据的传输方式，目前采用Mars自己的传输格式，这一层的主要功能包括：心跳、重连、报文的拆/组包等。</li></strong>
+						<strong><li>Protocol：协议层，定义数据的传输格式，这一层的主要功能包括提供Json、Xml、Protobuf、java序列化bytes流等协议的编、解码。
+						(目前采用编写glowworm这个开源序列化包)</li></strong>
 						<strong><li>Filter：过滤层，它在服务消费方或提供方的职能是不一样的。</li></strong>
 							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1、	服务消费方：主要提供监控的Filter。<br>
 							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、	服务提供方：主要提供服务调用权限控制等Filter。
@@ -76,8 +76,8 @@
 						这样业务代码在使用的时候根本不用知道它调用的是本地接口实现还是远程服务。
 						<br>
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、服务接口的Wrapper：它作用在服务提供者Server端，它的作用是把从协议层来的服务请求，转换成对具体服务实现类的调用。
-						<li>用户的业务代码和服务具体实现类</li>
-					<strong><li>软件架构</li></strong>
+						<strong><li>用户的业务代码和服务具体实现类</li></strong>
+					<strong><li>领域模型</li></strong>
 					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mars的领域模型非常直白：应用代码发起的任何远程调用都会被mars客户端封装成一个Request实例，序列化传给服务器端。mars服务器端收到客户端请求处理完后，
 					把处理结果序列化之后返回给调用方。mars的所有设计都是为了完成这一转化。
 					<strong><li>物理部署架构设计</li></strong>
@@ -102,9 +102,9 @@
 				mars的通讯层主要是参考ActiveMQ的通讯层实现的。
 				<img src="images/communication.png">
 					<h3>client设计</h3>
-					client的设计采用职责链的方式，通过定义接口类Transport、TransportListener、TransportFilter，把socket通讯相关的失败重连、心跳处理、请求响应匹配等基本功能“串”起来，以完成client端需要完成的功能。
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;client的设计采用职责链的方式，通过定义接口类Transport、TransportListener、TransportFilter，把socket通讯相关的失败重连、心跳处理、请求响应匹配等基本功能“串”起来，以完成client端需要完成的功能。
 					<h3>Server设计</h3>
-					Server端处理相对简单，它解析发过来的请求，并通过线程池来执行具体业务处理，超过线程池无法处理的请求将直接丢弃。
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Server端处理相对简单，它解析发过来的请求，并通过线程池来执行具体业务处理，超过线程池无法处理的请求将直接丢弃。
 					<h3>Message格式(报文头(12 bytes) + 报文体)</h3>
 						<h4>报文头格式</h4>
 						<table>
@@ -136,8 +136,7 @@
 						</table>
 
 		<h2>mars的序列化</h2>
-				在阿里的fastJSON和google的protocol Buffer的集成上研发的一套序列化工具，目前已经开源在github上：glowworm(萤火虫):https://github.com/netcomm/glowWorm
-		
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在阿里的fastJSON和google的protocol Buffer的集成上研发的一套序列化工具，目前已经开源在github上：glowworm(萤火虫):<a>https://github.com/netcomm/glowWorm</a>
 		<h2>mars使用示例</h2>
 		<h3>服务提供方<h3>
 		<pre><code>
@@ -205,20 +204,21 @@
 	    	<li>服务注册中心的配置</li>
 	    	示例：
 	    	<pre><code>mars:registry protocol="zookeeper" address="10.12.162.87:2181"</code></pre>
-				参数说明：
+				参数说明：<br>
 					<b>protocol</b>:注册中心的协议类型，目前支持zookeeper。<br>
 					<b>address</b>:zk的地址。
 			<li>通讯方式的配置</li>
 				示例：
 	    	<pre><code>mars:transporServer id="axx" type="mars" ip="127.0.0.1" port="10000"</code></pre>
-				参数说明：
+				参数说明：<br>
 						<b>type</b>:通讯类型，目前支持mars协议。<br>
 						<b>ip</b>:服务ip地址。<br>
 	     			<b>port</b>:服务端口。
 			<li>服务的配置</li>
 				示例：
-	    	<pre><code>mars:service interface="demo.TestService" ref="testProducer" transporServer="mar1"</code></pre>
-				参数说明：
+	    	<pre><code>mars:service interface="demo.TestService" ref="testProducer"
+	    		 transporServer="mar1"</code></pre>
+				参数说明：<br>
 						<b>interface</b>：对外暴露的服务接口名。<br>
 						<b>ref</b>：实现服务接口的实例类。<br>
 						<b>transporServer</b>：暴露服务的通讯方式。<br>
@@ -227,7 +227,7 @@
 				<li>服务注册中心的配置</li>
 	    	示例：
 	    	<pre><code>mars:registry protocol="zookeeper" address="10.12.162.87:2181"</code></pre>
-				参数说明：
+				参数说明：<br>
 					<b>protocol</b>:注册中心的协议类型，目前支持zookeeper。<br>
 					<b>address</b>:zk的地址。
 				<li>服务引用的配置</li>
@@ -235,7 +235,7 @@
 	    	<pre><code>mars:serviceReference id="testService" interface="demo.TestService"
 		clustertype="failover" loadbalance="roundrobin" clusterItems=""
 		connections="5" timeout="1000" retries="2"</code></pre>
-				参数说明：
+				参数说明：<br>
 					<b>interface</b>:需要调用的服务接口名。<br>
 					<b>clustertype</b>:集群类型，目前支持failover(默认)。<br>
 					<b>loadbalance</b>:负载均衡策略，目前支持roundrobin(轮循)(默认)。<br>
