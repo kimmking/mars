@@ -87,7 +87,7 @@
 			
 			<h2>mars实现</h2>
 				<strong><li>服务暴露过程</li></strong>
-					<img src="images/serviceexport.png" width="200" height="100">
+					<img src="images/serviceexport.png">
 				<strong><li>服务消费过程</li></strong>
 					<img src="images/serviceref.png">
 				<strong><li>模块包结构</li></strong>
@@ -114,12 +114,49 @@
 								<th>位置</th>
 								<th>描述</th>
 							</tr>
-						<tr><td>int</td><td>4</td><td>0-3</td><td>报文长度</td></tr>
-						<tr><td>byte</td><td>2</td><td>4-5</td><td>magic验证功能</td></tr>
-						<tr><td>byte</td><td>1</td><td>6</td><td>压缩标识，0=未压缩，1=压缩</td></tr>
+							<tr><td>int</td><td>4</td><td>0-3</td><td>报文长度</td></tr>
+							<tr><td>byte</td><td>2</td><td>4-5</td><td>magic验证功能</td></tr>
+							<tr><td>byte</td><td>1</td><td>6</td><td>压缩标识，0=未压缩，1=压缩</td></tr>
+						</table>
+						<h4>报文体格式</h4>
+						<table>
+							<tr>
+								<th>类型</th>
+								<th>长度(byte)</th>
+								<th>位置</th>
+								<th>描述</th>
+							</tr>
+							<tr><td>long</td><td>8</td><td>0-7</td><td>消息id</td></tr>
+							<tr><td>byte</td><td>1</td><td>8</td><td>报文类型</td></tr>
+							<tr><td>byte</td><td>1</td><td>9</td><td>该报文是否需要回复</td></tr>
+							<tr><td>int</td><td>4</td><td>10-13</td><td>报文具体内容长度</td></tr>
+							<tr><td>int</td><td>4</td><td>14-17</td><td>报文其他属性值长度</td></tr>
+							<tr><td>byte</td><td></td><td></td><td>内容值</td></tr>
+							<tr><td>byte</td><td></td><td></td><td>报文其他属性值</td></tr>
 						</table>
 
-				
+		<h2>mars的序列化</h2>
+				在阿里的fastJSON和google的protocol Buffer的集成上研发的一套序列化工具，目前已经开源在github上：glowworm(萤火虫):https://github.com/netcomm/glowWorm
+		
+		<h2>Mars使用示例</h2>
+		<h3>服务提供方<h3>
+			<strong>----------------------------------------------服务接口实现类---------------------------------------------------</strong><br>
+		<pre><code>
+				package demo;
+				import java.util.ArrayList;
+				import com.cn.jd.mars.service.MarsServiceExportService;
+
+				public class TestProducer implements TestService{
+				@Override
+				public String sayHello(String hiStrParm, ArrayList detailListParm) {
+						//执行业务代码
+						return "new world "+hiStrParm;
+					}
+				}
+
+		</code></pre>
+		
+		
     <!-- FOOTER  -->
     <div id="footer_wrap" class="outer">
       <footer class="inner">
