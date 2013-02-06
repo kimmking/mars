@@ -59,7 +59,31 @@
 					<strong><li>提供高效、稳定的通讯功能</li></strong>
 					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;服务消费者和提供者之间采用Mars内部实现的一套自定义通讯框架，在保证性能的前提下提供心跳、失败重连等机制，
 					以应对各种复杂的网络环境。
-
+					
+			<h2>mars设计</h2>
+					<strong><li>软件架构</li></strong>
+						<img src="imgs/struct.png">
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;服务请求Client和服务提供Server端它们之间采用TCP通讯。Mars的架构设计分成以下几层，我们按图从下往上依次介绍：
+						<li>Transport：传输层。它定义数据的传输方式，目前采用Mars自己的传输格式，这一层的主要功能包括：心跳、重连、报文的拆/组包等。</li>
+						<li>Protocol：协议层，定义数据的传输格式，这一层的主要功能包括提供Json、Xml、Protobuf、java序列化bytes流等协议的编、解码。
+						(目前采用编写glowworm这个开源序列化包)</li>
+						<strong><li>Filter：过滤层，它在服务消费方或提供方的职能是不一样的。</li></strong>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1、	服务消费方：主要提供监控的Filter。<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、	服务提供方：主要提供服务调用权限控制等Filter。
+						<strong><li>Cluster/ LoadBalance：集群层，这一层主要功能是为服务消费方提供集群等功能。</li></strong>
+						<strong><li>服务接口的Proxy和服务的Wrapper：</li></strong>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1、服务接口的Proxy：它作用在服务调用Client端，它采用动态代理机制并通过Spring注入到服务请求方的业务代码中，充当一个接口的现实。
+						这样业务代码在使用的时候根本不用知道它调用的是本地接口实现还是远程服务。
+						<br>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、服务接口的Wrapper：它作用在服务提供者Server端，它的作用是把从协议层来的服务请求，转换成对具体服务实现类的调用。
+						<li>用户的业务代码和服务具体实现类</li>
+					<strong><li>软件架构</li></strong>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mars的领域模型非常直白：应用代码发起的任何远程调用都会被mars客户端封装成一个Request实例，序列化传给服务器端。mars服务器端收到客户端请求处理完后，
+					把处理结果序列化之后返回给调用方。mars的所有设计都是为了完成这一转化。
+					<strong><li>物理部署架构设计</li></strong>
+					<img src="imgs/deploy.png">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;上面是一个生产环境的部署示意图，某一个服务有多个提供者部署在不同的机器上，这样服务消费方可以通过注册中心，
+					自动的新增、删除服务提供者，当服务能力不够的时候，可以方便的新增服务提供方的数量。
     <!-- FOOTER  -->
     <div id="footer_wrap" class="outer">
       <footer class="inner">
